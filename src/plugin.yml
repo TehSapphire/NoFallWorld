@@ -1,0 +1,8 @@
+name: NoFallWorld
+version: 0.1
+main: me.JayzaSapphire.NoFallWorld
+author: JayzaSapphire
+commands:
+  nfw:
+    description: Add your current world to the list.
+    permission: nfw.register
