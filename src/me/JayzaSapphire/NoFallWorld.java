@@ -18,6 +18,7 @@ public class NoFallWorld extends JavaPlugin implements Listener {
     public List<String> worlds;
     private HashMap<String, ItemStack[]> items = new HashMap<String, ItemStack[]>();
     private HashMap<String, ItemStack[]> armor = new HashMap<String, ItemStack[]>();
+    private HashMap<String, Integer> exp = new HashMap<String, Integer>();
     private HashSet<String> dead = new HashSet<String>();
     
     @Override
@@ -40,9 +41,7 @@ public class NoFallWorld extends JavaPlugin implements Listener {
 		if (player.getLastDamageCause().getCause() == DamageCause.VOID && worlds.contains(world.toLowerCase())) {
 			items.put(player.getName(), player.getInventory().getContents());
 			armor.put(player.getName(), player.getInventory().getArmorContents());
-			
-			event.setDroppedExp(0);
-			event.setKeepLevel(true);
+			exp.put(player.getName(), player.getLevel());
 			
 			dead.add(player.getName());
 		}
@@ -59,6 +58,7 @@ public class NoFallWorld extends JavaPlugin implements Listener {
 	
 	private void restore(final Player player) {
 		getServer().getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				
 				if (items.containsKey(player.getName())) {
@@ -71,9 +71,16 @@ public class NoFallWorld extends JavaPlugin implements Listener {
 					armor.remove(player.getName());
 				}
 				
+				if (exp.containsKey(player.getName())) {
+					player.setLevel(exp.get(player.getName()));
+					exp.remove(player.getName());
+				}
+				
 				if (dead.contains(player.getName())) {
 					dead.remove(player.getName());
 				}
+				
+				player.updateInventory();
 			}
 		}, 10);
 	}
